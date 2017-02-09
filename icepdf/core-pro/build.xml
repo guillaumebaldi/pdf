@@ -1,0 +1,110 @@
+<!--
+  ~ Copyright 2006-2014 ICEsoft Technologies Inc.
+  -->
+
+<project name="icepdf-font-engine" default="build.all">
+
+    <property file="build.properties"/>
+
+    <!-- path to ossrepo/icepdf/ so we can build locally -->
+    <!-- default will build the application via cruise control -->
+    <!-- override to ../../../../ossrepo/icepdf/trunk|branches|tags|/icepdf/ -->
+    <property name="icepdf.ossrepo.dir" value="../../../../icepdf/icepdf/"/>
+
+    <property name="build.lib.dir" location="../${icepdf.ossrepo.dir}/lib"/>
+    <property name="build.common.file"
+              location="../${icepdf.ossrepo.dir}/examples/etc/build-common.xml"/>
+
+    <patternset id="icepdf.lib.core"
+                includes="
+                icepdf-core.jar
+                icepdf-viewer.jar
+                "
+            />
+
+    <import file="${build.common.file}"/>
+
+    <property name="productinfo.src"
+              location="conf/org/icepdf/core/pro/application"/>
+    <property name="productinfo.dest"
+              location="src/org/icepdf/core/pro/application"/>
+
+    <!-- override class path with icepdf.jar which a dependency-->
+    <path id="compile.run.classpath">
+        <pathelement location="${build.classes.dir}"/>
+        <fileset dir="${build.lib.dir}">
+            <patternset refid="icepdf.lib.core"/>
+        </fileset>
+    </path>
+
+    <target name="font-engine.jar" depends="compile"
+            description="Creates ICEFpdf NFont library.">
+        <!-- jar file name -->
+        <property name="jar.file.name" value="icepdf-pro.jar"/>
+
+        <build.jar jar.file.name="${jar.file.name}" jar.section.name="org/icepdf/core/">
+            <add.jar.src.includes>
+                <include name="org/icepdf/core/pobjects/fonts/nfont/encoding/"/>
+                <exclude name="org/icepdf/core/pobjects/fonts/nfont/cmap/"/>
+            </add.jar.src.includes>
+        </build.jar>
+
+        <copy file="${dist.dir}/${jar.file.name}" todir="${build.lib.dir}"
+              overwrite="true"/>
+    </target>
+
+    <target name="font-intl.jar"
+            description="Creates ICEFpdf NFont Internalized library.">
+        <!-- jar file name -->
+        <property name="jar.file.name2" value="icepdf-pro-intl.jar"/>
+
+        <delete file="${dist.dir}/${jar.file.name2}"/>
+        <mkdir dir="${dist.dir}"/>
+        <jar destfile="${dist.dir}/${jar.file.name2}" duplicate="fail">
+            <fileset dir="${src.dir}">
+                <include name="org/icepdf/core/pobjects/fonts/nfont/cmap/"/>
+            </fileset>
+        </jar>
+
+        <copy file="${dist.dir}/${jar.file.name2}" todir="${build.lib.dir}"
+              overwrite="true"/>
+    </target>
+
+    <target name="jars" depends="font-engine.jar, font-intl.jar"/>
+
+    <target name="build.all" depends="font-engine.jar, font-intl.jar"/>
+
+    <target name="compile" depends="update.product.info">
+        <compile/>
+    </target>
+
+    <target name="clean" description="clean the directory">
+        <clean/>
+    </target>
+
+    <target name="javadoc">
+        <delete dir="${build.dir}/javadocs"/>
+        <javadoc verbose="false" useexternalfile="true" failonerror="true"
+                 destdir="${build.dir}/javadocs"
+                 windowtitle="ICEpdf Font Engine API">
+            <classpath refid="compile.run.classpath"/>
+            <fileset dir="${src.dir}">
+                <exclude name="org/icepdf/core/pobjects/fonts/nfont/cmap/"/>
+                <exclude name="org/icepdf/core/pobjects/fonts/nfont/doc/"/>
+                <exclude name="org/icepdf/core/pobjects/fonts/nfont/encoding/"/>
+                <exclude name="org/icepdf/core/pobjects/fonts/nfont/io/"/>
+                <exclude name="org/icepdf/core/pobjects/fonts/nfont/lang/"/>
+                <exclude
+                        name="org/icepdf/core/pobjects/fonts/nfont/CacheBitmap.java"/>
+                <exclude
+                        name="org/icepdf/core/pobjects/fonts/nfont/OTkern.java"/>
+                <exclude
+                        name="org/icepdf/core/pobjects/fonts/nfont/SfntDirectory.java"/>
+                <exclude
+                        name="org/icepdf/core/pobjects/fonts/nfont/TrueTypeStateTable.java"/>
+            </fileset>
+            <doctitle><![CDATA[<h2>ICEpdf Font Engine API</h2>]]></doctitle>
+        </javadoc>
+    </target>
+
+</project>

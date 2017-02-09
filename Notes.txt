@@ -1,0 +1,25 @@
+- Télécharger code source ICEpdf
+- Installer JDK + Ant Apache 
+- Créer les variables d'environnement %JAVA_HOME% et %ANT_HOME%
+- Faire ant dans : \icepdf
+-> Génère les Jar dans lib
+- Faire java -jar .\lib\icepdf-viewer 
+-> Lance le PDF viewer
+
+Refaire ant après les modifications
+
+
+SwingViewBuilder : 	L505		Appel de buildTestMenu()
+			L568-571 	buildTestMenu()
+			L1126-1127	Appel de buildTestsToolbar
+			L1464-1469	buildTestsToolBar
+			L1688-1696	buildFormTestButton
+
+SwingController :	L934-937	setFormTestButton
+			L4140		appel de testDisplay si click sur bouton test
+			L3722-3725	testDisplay()
+
+MessageBundle :		L159		Label du menu test
+MessageBundle_fr :	L101		Label du menu test en FR
+PropertiesManager :	L72		Propriété Toolbar Tests
+
